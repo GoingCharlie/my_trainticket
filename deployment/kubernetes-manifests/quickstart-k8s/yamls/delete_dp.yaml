@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-station-food-service
+spec:
+  selector:
+    matchLabels:
+      app: ts-station-food-service
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ts-station-food-service
+    spec:
+      nodeSelector:
+        apps.openyurt.io/desired-nodepool: cloud
+      containers:
+        - name: ts-station-food-service
+          image: habor.production.horsecoder.com/hybrid/ts-station-food-service:2.0.0
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+            - name: NACOS_ADDRS
+              value: "nacos-0.nacos-headless.nacos.svc.cluster.local,nacos-1.nacos-headless.nacos.svc.cluster.local,nacos-2.nacos-headless.nacos.svc.cluster.local"
+          envFrom:
+            - secretRef:
+                name: ts-station-food-mysql
+          ports:
+            - containerPort: 18855
+          resources:
+            requests:
+              cpu: 100m
+              memory: 300Mi
+            limits:
+              cpu: 500m
+              memory: 2000Mi
+          readinessProbe:
+            tcpSocket:
+              port: 18855
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 5
