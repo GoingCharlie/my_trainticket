@@ -28,7 +28,7 @@ Tag=1.0.0
 ```
 3.推镜像到habor库  
 首先要用docker login登录一下我们的私有镜像库  
-![Alt text](./image/3cc93d9a43a0c92befff856c800d404.png)  
+ 
 ```
 docker login https://habor.production.horsecoder.com
 ```
